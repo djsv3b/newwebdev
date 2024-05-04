@@ -9,6 +9,27 @@ const User = require('./user-model');
 app.use(cors());
 app.use(express.json());
 
+
+const uniqueValidator = require('mongoose-unique-validator');
+
+const postSchema = new mongoose.Schema({
+    content: String,
+    done: { type: Boolean, default: false }
+});
+
+const userSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    posts: [postSchema]
+});
+
+userSchema.plugin(uniqueValidator);
+
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+
+module.exports = User;
+
+
 // MongoDB connection with Mongoose (Direct URI included as per your preference)
 const uri = "mongodb+srv://djsv3b:ikYwFEMcqQ7T5ngj@cluster0.5uujixz.mongodb.net/?retryWrites=true&w=majority";
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })

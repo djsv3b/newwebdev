@@ -1,0 +1,19 @@
+.content {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .lefthalf, .righthalf {
+    flex: 1;
+    padding: 10px;
+  }
+  
+
+  .lefthalf {
+    margin-right: 10px; 
+  }
+  
+  .righthalf {
+    margin-left: 10px;
+  }
+  

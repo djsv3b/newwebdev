@@ -1,0 +1,17 @@
+<div class="signup-container">
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <form (ngSubmit)="onSignUp(signupForm)" #signupForm="ngForm" class="signup-form">
+    <div class="form-group">
+      <input type="text" ngModel name="username" required placeholder="Username">
+    </div>
+    <div class="form-group">
+      <input type="password" ngModel name="password" required placeholder="Password">
+    </div>
+    <div class="form-group">
+      <button type="submit" [disabled]="signupForm.invalid || isLoading">Sign Up</button>
+    </div>
+    <div class="login-link">
+      <a routerLink="/login">Already have an account? Log in</a>
+    </div>
+  </form>
+</div>
