@@ -1,6 +1,0 @@
-<mat-toolbar class="header" color="primary">
-    <p *ngIf="isAuthenticated"><a routerLink="/" class="nav-link">Home</a></p>
-    <p *ngIf="!isAuthenticated"><a routerLink="/login" class="nav-link">Login</a></p>
-    <p *ngIf="!isAuthenticated"><a routerLink="/sign-up" class="nav-link">Sign Up</a></p>
-    <p *ngIf="isAuthenticated"><a (click)="onLogout()" class="nav-link">Logout</a></p>
-</mat-toolbar>
