@@ -10,26 +10,6 @@ app.use(cors());
 app.use(express.json());
 
 
-const uniqueValidator = require('mongoose-unique-validator');
-
-const postSchema = new mongoose.Schema({
-    content: String,
-    done: { type: Boolean, default: false }
-});
-
-const userSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    posts: [postSchema]
-});
-
-userSchema.plugin(uniqueValidator);
-
-const User = mongoose.models.User || mongoose.model('User', userSchema);
-
-module.exports = User;
-
-
 // MongoDB connection with Mongoose (Direct URI included as per your preference)
 const uri = "mongodb+srv://djsv3b:ikYwFEMcqQ7T5ngj@cluster0.5uujixz.mongodb.net/?retryWrites=true&w=majority";
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -47,9 +27,16 @@ app.post('/sign-up', async (req, res) => {
     });
 
     const result = await newUser.save();
+    const token = jwt.sign(
+      { username: result.username, userId: result._id },
+      'secret_string', // Replace with your secret or process.env.SECRET
+      { expiresIn: '1h' }
+    );
+
     res.status(201).json({
-      message: 'User created',
-      result: result
+      message: 'User created and logged in',
+      token: token,
+      userId: result._id
     });
   } catch (err) {
     res.status(500).json({ error: err });
@@ -130,28 +117,19 @@ app.get('/api/posts/:userId', async (req, res) => {
   }
 });
 
-// Update done status of a post
-app.patch('/api/posts/:userId/:postId', async (req, res) => {
+app.delete('/api/posts/:userId/:postId', async (req, res) => {
   const { userId, postId } = req.params;
-  const { done } = req.body;
-
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const post = user.posts.id(postId);
-    if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
-    }
-
-    post.done = done;
-    await user.save();
-    res.json(post);
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      // Remove the post from the posts array
+      user.posts = user.posts.filter(post => post._id.toString() !== postId);
+      await user.save();
+      res.status(200).json({ message: 'Post deleted successfully' });
   } catch (err) {
-    console.error("Error updating post:", err);
-    res.status(500).json({ message: 'Error updating post' });
+      res.status(500).json({ message: 'Failed to delete post', error: err });
   }
 });
 
