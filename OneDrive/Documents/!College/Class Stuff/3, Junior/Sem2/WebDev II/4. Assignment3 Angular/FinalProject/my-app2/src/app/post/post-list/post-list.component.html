@@ -1,0 +1,22 @@
+<h1>Task List</h1>
+
+<div class="task-list-container">
+  <button (click)="toggleShowDone()" class="toggle-show-btn">
+    {{ showDoneTasks ? 'Hide Done' : 'Show Done' }}
+  </button>
+  
+  <ul *ngIf="posts.length > 0" class="task-list">
+    <ng-container *ngFor="let post of posts">
+        <li *ngIf="!post.done || showDoneTasks" [ngClass]="{'done-task': post.done}">
+            <span>{{ post.content }}</span>
+            <button class="donebutton" (click)="markDone(post.id); $event.preventDefault();">
+                <img [src]="post.done ? 'assets/images/green.jpg' : 'assets/images/red.jpg'" alt="Done" width="20" height="20">
+            </button>
+        </li>
+    </ng-container>
+</ul>
+
+
+   
+  <p *ngIf="posts.length === 0">No tasks to display</p>
+</div>

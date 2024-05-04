@@ -1,0 +1,13 @@
+<div class="content-vertical">
+  <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input class="form-control" formControlName="username" type="text">
+      <label for="password">Password</label>
+      <input class="form-control" formControlName="password" type="password">
+      <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+      <button [disabled]="!loginForm.valid" type="submit" class="btn btn-success">Login</button>
+      <p><a routerLink="/sign-up" class="alternate-link">Don't have an account? Sign Up</a></p>
+    </div>
+  </form>
+</div>

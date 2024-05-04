@@ -1,0 +1,39 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  align-items: center; 
+  justify-content: space-evenly; 
+}
+.post-input-area {
+  margin-bottom: 20px;
+}
+
+.post-textarea {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+.post-button {
+  padding: 10px 20px;
+  background-color: #6f00ff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.post-button:hover {
+  background-color: #5000b8;
+}
+
+.post-history {
+  width: 100%;
+}
+
+.post-list-container {
+  margin-top: 10px;
+  width: 100%;
+}
