@@ -2,5 +2,6 @@
 
   <div class="post-input-area">
     <textarea [(ngModel)]="newPostText" class="post-textarea" placeholder="Enter your task"></textarea>
-    <button (click)="addPost(newPostText)" class="post-button">Post</button>
+    <button (click)="addPost(newPostText, currentUserId)" class="post-button">Post</button>
+    <button (click)="log(currentUserId)" class="post-button">consolelog</button>
 </div>

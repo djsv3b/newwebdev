@@ -1,40 +1,58 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Post } from './post/post.model';
-import { catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostService {
   private apiUrl = 'http://localhost:3000/api/posts';
-  private posts: Post[] = [];
-  private postsUpdated = new BehaviorSubject<Post[]>([]);
+  private posts = new BehaviorSubject<Post[]>([]);
 
   constructor(private http: HttpClient) {}
 
   getPosts(userId: string): Observable<Post[]> {
-    return this.http.get<Post[]>(`${this.apiUrl}/${userId}`);
+    return this.http.get<Post[]>(`${this.apiUrl}/${userId}`).pipe(
+      tap(posts => {
+        this.posts.next(posts);  // Update the BehaviorSubject with the new posts
+      })
+    );
   }
-
-
-
-  addPost(userId: string, postContent: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/${userId}`, { content: postContent });
-  }
-
 
   getPostsUpdateListener(): Observable<Post[]> {
-    return this.postsUpdated.asObservable();
+    return this.posts.asObservable();
   }
 
-  updatePostDone(userId: string, postId: string, done: boolean): Observable<any> {
-    const url = `${this.apiUrl}/${userId}/${postId}`;
-    return this.http.patch<any>(url, { done });
+  addPost(userId: string, postContent: string): Observable<Post> {
+    return this.http.post<Post>(`${this.apiUrl}/${userId}`, { content: postContent }).pipe(
+      tap((newPost) => {
+        const currentPosts = this.posts.getValue();
+        this.posts.next([...currentPosts, newPost]);  // Include the new post in the current posts array
+      })
+    );
   }
   
-  
+  updatePostDone(userId: string, postId: string, done: boolean): Observable<any> {
+    const url = `${this.apiUrl}/${userId}/posts/${postId}`;
+    return this.http.patch<any>(url, { done }).pipe(
+      tap(() => {
+        this.updatePostStatus(postId, done);  // Also update the local state
+      })
+    );
+  }
+
+  private updatePostStatus(postId: string, done: boolean) {
+    postId = postId.toString(); // Ensure postId is a string
+    const updatedPosts = this.posts.getValue().map(post => {
+        // Ensure post._id is treated as a string as well
+        if (post._id.toString() === postId) {
+            return { ...post, done: done };  // Update done status
+        }
+        return post;
+    });
+    this.posts.next(updatedPosts);  // Emit the updated posts array
+}
+
 }

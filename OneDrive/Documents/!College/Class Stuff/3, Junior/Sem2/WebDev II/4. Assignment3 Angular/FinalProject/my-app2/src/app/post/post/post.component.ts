@@ -14,29 +14,30 @@ export class PostComponent {
   constructor(private postService: PostService, private authService: AuthService) {
     this.currentUserId = this.authService.getUserId(); // Fetch the current user ID
   }
+
+
   // Define the method to add a post
-  addPost(postContent: string) {
-    const userId = this.authService.getUserId();
-    console.log('User ID:', userId); // Log user ID
-    
-    if (!userId) {
-      console.error('User ID is null, cannot add post');
-      return;
+addPost(postContent: string, userId: string) {
+  if (!userId) {
+    console.error('User ID is null, cannot add post');
+    return;
+  }
+  if (!postContent.trim()) {
+    console.error('Post content is empty');
+    return;
+  }
+  this.postService.addPost(userId, postContent.trim()).subscribe({
+    next: (newPost) => {
+      console.log('Post added:', newPost);
+    },
+    error: (error) => {
+      console.error('Error adding post:', error);
     }
-    if (!postContent.trim()) {
-      console.error('Post content is empty');
-      return;
-    }
-    this.postService.addPost(userId, postContent.trim()).subscribe({
-      next: (newPost) => {
-        console.log('Post added:', newPost);
-        this.newPostText = ''; // Clear the textarea after successful post submission
-      },
-      error: (error) => {
-        console.error('Error adding post:', error);
-        alert('Failed to add post: ' + error.message);
-      }
-    });
+  });
+}
+
+  log(id: string){
+    console.log('Current User ID:', id);
   }
 
 }
